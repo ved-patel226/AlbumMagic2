@@ -1,0 +1,4 @@
+/backend/target
+.env
+backend/.spotify_token_cache.json
+backend/.env
