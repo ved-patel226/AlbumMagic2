@@ -23,9 +23,8 @@ body {
     .left {
         width: 600px;
         height: 600px;
-
         position: relative;
-
+        margin-right: 20px; // Add space between left and right sections
 
         .cover {
             width: 600px;
