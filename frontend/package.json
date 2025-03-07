@@ -8,11 +8,14 @@
     "backend": "cd ../backend && cargo run",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "scss": "sass --watch src/scss:src/css"
   },
   "dependencies": {
+    "framer-motion": "^12.4.10",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-transition-group": "^4.4.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

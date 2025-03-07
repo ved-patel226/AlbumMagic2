@@ -3,7 +3,6 @@ use crate::AppState;
 use serde::Serialize;
 use axum::{ extract::State, Json };
 use std::sync::Arc;
-use chrono::{ DateTime, Utc, TimeDelta };
 
 use crate::api::get_lyrics::get_lyrics;
 
@@ -13,10 +12,7 @@ pub struct SongResponse {
     pub artist: String,
     pub album: String,
     pub album_picture: String,
-
-    pub progress: TimeDelta,
-    pub total_time: DateTime<chrono::Utc>,
-
+    pub progress: u32,
     pub lyrics: Vec<(String, u64)>,
 }
 
@@ -25,24 +21,31 @@ pub async fn current_song(State(state): State<Arc<AppState>>) -> Result<
     Json<SongResponse>
 > {
     let spotify = &state.spotify;
+    let last_song = state.last_song.clone();
 
-    let current = spotify.current_playing(None, None::<Vec<_>>).await.map_err(|_|
+    let current_last_song = {
+        let guard = last_song.read().await;
+        guard.clone()
+    };
+
+    let current = spotify.current_playing(None, None::<Vec<_>>).await.map_err(|_| {
         Json(SongResponse {
-            song: "No song".to_string(),
-            artist: "No artist".to_string(),
-            album: "No album".to_string(),
-            album_picture: "No album picture".to_string(),
-            progress: TimeDelta::seconds(0),
-            total_time: Utc::now(),
+            song: "".to_string(),
+            artist: "".to_string(),
+            album: "".to_string(),
+            album_picture: "".to_string(),
+            progress: 0,
             lyrics: Vec::new(),
         })
-    )?;
+    })?;
 
     if let Some(current_item) = current {
         if let Some(rspotify::model::PlayableItem::Track(track)) = current_item.item {
             let id = track.id.clone();
 
-            let lyrics = if let Some(ref track_id) = id {
+            let lyrics = if current_last_song == track.name {
+                Vec::new()
+            } else if let Some(ref track_id) = id {
                 let track_id_string = track_id.to_string();
                 let track_id_str = track_id_string.split(':').last().unwrap_or("");
 
@@ -50,6 +53,11 @@ pub async fn current_song(State(state): State<Arc<AppState>>) -> Result<
             } else {
                 Vec::new()
             };
+
+            {
+                let mut write_guard = last_song.write().await;
+                *write_guard = track.name.clone();
+            }
 
             return Ok(
                 Json(SongResponse {
@@ -63,8 +71,7 @@ pub async fn current_song(State(state): State<Arc<AppState>>) -> Result<
                         .get(0)
                         .map(|i| i.url.clone())
                         .unwrap_or_default(),
-                    progress: current_item.progress.unwrap() * 1000, // convert to milliseconds
-                    total_time: current_item.timestamp,
+                    progress: current_item.progress.unwrap().num_milliseconds() as u32, // convert to milliseconds as u32
                     lyrics: lyrics,
                 })
             );
@@ -73,12 +80,11 @@ pub async fn current_song(State(state): State<Arc<AppState>>) -> Result<
 
     return Err(
         Json(SongResponse {
-            song: "No song".to_string(),
-            artist: "No artist".to_string(),
-            album: "No album".to_string(),
-            album_picture: "No album picture".to_string(),
-            progress: TimeDelta::seconds(0),
-            total_time: Utc::now(),
+            song: "".to_string(),
+            artist: "".to_string(),
+            album: "".to_string(),
+            album_picture: "".to_string(),
+            progress: 0,
             lyrics: Vec::new(),
         })
     );

@@ -1,0 +1,100 @@
+$primary-color: #FAF6F0;
+$secondary-color: #F4DFC8;
+
+body {
+    background: #000000;
+    color: $primary-color;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.App {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 98vh;
+
+    .left,
+    .right {
+        width: 100%;
+    }
+
+    .left {
+        width: 600px;
+        height: 600px;
+
+        position: relative;
+
+
+        .cover {
+            width: 600px;
+            height: 600px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 20px;
+            object-fit: cover; // This ensures the image maintains its aspect ratio
+
+            &:nth-child(2) {
+                filter: blur(30px);
+            }
+
+            &:nth-child(1) {
+                z-index: 999;
+            }
+        }
+    }
+
+    .right {
+        justify-content: flex-end;
+    }
+
+    img {
+        border-radius: 20px;
+    }
+
+    h1,
+    h2,
+    h3 {
+        margin: 0.5rem;
+    }
+
+
+
+    .lyrics {
+        max-width: 40%;
+
+        text-align: left;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+
+        flex-wrap: wrap;
+
+
+        // Keep your current lyric animation
+        .current-lyric {
+            display: inline-block;
+            font-weight: bold;
+            font-size: 3em;
+            margin: 0 0.2rem;
+        }
+    }
+
+    @keyframes popIn {
+        from {
+            color: $secondary-color;
+            transform: scale(0.9);
+            opacity: 0;
+            filter: blur(5px);
+        }
+
+        to {
+            color: $primary-color;
+            transform: scale(1);
+            opacity: 1;
+            filter: blur(0);
+        }
+    }
+}

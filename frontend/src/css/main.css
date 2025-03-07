@@ -1,0 +1,79 @@
+body {
+  background: #000000;
+  color: #FAF6F0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.App {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 98vh;
+}
+.App .left,
+.App .right {
+  width: 100%;
+}
+.App .left {
+  width: 600px;
+  height: 600px;
+  position: relative;
+}
+.App .left .cover {
+  width: 600px;
+  height: 600px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 20px;
+  object-fit: cover;
+}
+.App .left .cover:nth-child(2) {
+  filter: blur(30px);
+}
+.App .left .cover:nth-child(1) {
+  z-index: 999;
+}
+.App .right {
+  justify-content: flex-end;
+}
+.App img {
+  border-radius: 20px;
+}
+.App h1,
+.App h2,
+.App h3 {
+  margin: 0.5rem;
+}
+.App .lyrics {
+  max-width: 40%;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.App .lyrics .current-lyric {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 3em;
+  margin: 0 0.2rem;
+}
+@keyframes popIn {
+  from {
+    color: #F4DFC8;
+    transform: scale(0.9);
+    opacity: 0;
+    filter: blur(5px);
+  }
+  to {
+    color: #FAF6F0;
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/*# sourceMappingURL=main.css.map */

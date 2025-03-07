@@ -1,35 +1,111 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import fetchAPI from "./functions/GetApi";
+import { useEffect, useState } from "react";
+import "./css/main.css";
+import { motion, AnimatePresence } from "framer-motion";
 
-function App() {
-  const [count, setCount] = useState(0)
+function getCurrentLyrics(timestamp: number, lyrics: [string, number][]) {
+  if (lyrics.length == 0) {
+    return [];
+  }
+  for (let i = 0; i < lyrics.length; i++) {
+    if (lyrics[i][1] > timestamp) {
+      if (i > 0) {
+        let length = lyrics[i][1] - lyrics[i - 1][1];
+        let relative_progress = timestamp - lyrics[i - 1][1] + 500;
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+        let words = lyrics[i - 1][0].split(" ");
+
+        let wordsTimeList = lyrics[i - 1][0].split(" ").map((word, index) => {
+          let wordTime = (length / words.length) * index;
+          return [word, wordTime];
+        });
+
+        let currentwords = wordsTimeList
+          .filter(
+            (word) => typeof word[1] === "number" && word[1] < relative_progress
+          )
+          .map((word) => word[0]);
+
+        return currentwords;
+      }
+    }
+  }
+  return [];
 }
 
-export default App
+function App() {
+  const [songData, setSongData] = useState({
+    song: "",
+    artist: "",
+    album: "",
+    cover: "",
+    lyrics: [] as [string, number][],
+    progress: 0,
+  });
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      (async () => {
+        const song = await fetchAPI("current_song");
+
+        if (song.song == "") {
+          const url = await fetchAPI("");
+          window.location.href = url.url;
+        } else {
+          setSongData((prevData) => ({
+            song: song.song,
+            artist: song.artist,
+            album: song.album,
+            cover: song.album_picture,
+            progress: song.progress,
+            lyrics: song.lyrics.length ? song.lyrics : prevData.lyrics,
+          }));
+        }
+      })();
+    }, 500);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  if (songData.song == "") {
+    return <h1>Loading...</h1>;
+  }
+
+  const current_lyrics = getCurrentLyrics(songData.progress, songData.lyrics);
+  console.log(current_lyrics);
+
+  return (
+    <div className="App">
+      <div className="left">
+        <img
+          className="cover"
+          src={songData.cover}
+          alt={`Album cover for ${songData.album}`}
+        />
+        <img
+          className="cover"
+          src={songData.cover}
+          alt={`Album cover for ${songData.album}`}
+        />
+      </div>
+      <div className="right lyrics">
+        <AnimatePresence>
+          {current_lyrics.map((word, index) => (
+            <motion.span
+              key={`${word}-${index}`}
+              initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -40, filter: "blur(5px)" }}
+              transition={{ duration: 0.5 }}
+              className="current-lyric"
+            >
+              {word}{" "}
+            </motion.span>
+          ))}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+export default App;
