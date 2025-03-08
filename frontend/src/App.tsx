@@ -20,13 +20,7 @@ function getCurrentLyrics(timestamp: number, lyrics: [string, number][]) {
           return [word, wordTime];
         });
 
-        let currentwords = wordsTimeList
-          .filter(
-            (word) => typeof word[1] === "number" && word[1] < relative_progress
-          )
-          .map((word) => word[0]);
-
-        return currentwords;
+        return [wordsTimeList, relative_progress];
       }
     }
   }
@@ -71,7 +65,12 @@ function App() {
     return <h1>Loading...</h1>;
   }
 
-  const current_lyrics = getCurrentLyrics(songData.progress, songData.lyrics);
+  const res = getCurrentLyrics(songData.progress, songData.lyrics);
+  const current_lyrics: (string | number)[][] = Array.isArray(res[0])
+    ? res[0]
+    : [];
+  const relative_progress = res[1];
+
   console.log(current_lyrics);
 
   return (
@@ -89,17 +88,19 @@ function App() {
         />
       </div>
       <div className="right lyrics">
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {current_lyrics.map((word, index) => (
             <motion.span
               key={`${word}-${index}`}
-              initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -40, filter: "blur(5px)" }}
+              initial={{ opacity: 0, filter: "blur(5px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -50, filter: "blur(5px)" }}
               transition={{ duration: 0.5 }}
-              className="current-lyric"
+              className={`current-lyric ${
+                relative_progress > word[1] ? "active" : ""
+              }`}
             >
-              {word}{" "}
+              {word[0]}{" "}
             </motion.span>
           ))}
         </AnimatePresence>

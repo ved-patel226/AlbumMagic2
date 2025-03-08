@@ -35,8 +35,10 @@ body {
             border-radius: 20px;
             object-fit: cover; // This ensures the image maintains its aspect ratio
 
+
             &:nth-child(2) {
-                filter: blur(30px);
+                scale: 1.25;
+                filter: blur(100px);
             }
 
             &:nth-child(1) {
@@ -47,10 +49,8 @@ body {
 
     .right {
         justify-content: flex-end;
-    }
 
-    img {
-        border-radius: 20px;
+        padding-left: 30px;
     }
 
     h1,
@@ -63,35 +63,45 @@ body {
 
     .lyrics {
         max-width: 40%;
-
-        text-align: left;
+        text-align: center;
         display: flex;
         flex-direction: row;
-        justify-content: flex-start;
-
+        justify-content: flex-end;
         flex-wrap: wrap;
+        min-height: 120px;
+        overflow: hidden;
+        position: relative;
+        padding: 20px;
+        align-items: center;
 
-
-        // Keep your current lyric animation
         .current-lyric {
             display: inline-block;
             font-weight: bold;
             font-size: 3em;
             margin: 0 0.2rem;
+            will-change: transform, opacity, filter;
+            transition: all 0.3s ease;
+            line-height: 1.2;
+            color: transparent;
+            text-shadow: 0px 0px 9px #faf6f05e;
+
+            &.active {
+                color: whitesmoke;
+            }
         }
     }
 
     @keyframes popIn {
         from {
             color: $secondary-color;
-            transform: scale(0.9);
+            transform: scale(0.9) translateY(10px);
             opacity: 0;
             filter: blur(5px);
         }
 
         to {
             color: $primary-color;
-            transform: scale(1);
+            transform: scale(1) translateY(0);
             opacity: 1;
             filter: blur(0);
         }
