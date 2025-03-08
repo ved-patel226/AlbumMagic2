@@ -38,6 +38,21 @@ function App() {
   });
 
   useEffect(() => {
+    if (songData.cover) {
+      const favicon = document.getElementById("favicon") as HTMLLinkElement;
+      if (favicon) {
+        favicon.href = songData.cover;
+      } else {
+        const newFavicon = document.createElement("link");
+        newFavicon.id = "favicon";
+        newFavicon.rel = "icon";
+        newFavicon.href = songData.cover;
+        document.head.appendChild(newFavicon);
+      }
+    }
+  }, [songData.cover]);
+
+  useEffect(() => {
     const intervalId = setInterval(() => {
       (async () => {
         const song = await fetchAPI("current_song");
