@@ -73,7 +73,20 @@ body {
 }
 .App .lyrics .current-lyric.active {
   color: whitesmoke;
+  animation: 1s wave ease;
 }
+@keyframes wave {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 @keyframes popIn {
   from {
     color: #F4DFC8;

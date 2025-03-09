@@ -87,23 +87,38 @@ body {
 
             &.active {
                 color: whitesmoke;
+                animation: 1s wave ease;
+            }
+
+            @keyframes wave {
+                0% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-3px);
+                }
+
+                100% {
+                    transform: translateY(0);
+                }
             }
         }
     }
+}
 
-    @keyframes popIn {
-        from {
-            color: $secondary-color;
-            transform: scale(0.9) translateY(10px);
-            opacity: 0;
-            filter: blur(5px);
-        }
+@keyframes popIn {
+    from {
+        color: $secondary-color;
+        transform: scale(0.9) translateY(10px);
+        opacity: 0;
+        filter: blur(5px);
+    }
 
-        to {
-            color: $primary-color;
-            transform: scale(1) translateY(0);
-            opacity: 1;
-            filter: blur(0);
-        }
+    to {
+        color: $primary-color;
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        filter: blur(0);
     }
 }
